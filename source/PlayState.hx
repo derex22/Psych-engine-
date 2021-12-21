@@ -901,6 +901,13 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 		reloadHealthBarColors();
 
+creditTxt = new FlxText(876, 620, 348);
+        creditTxt.text = 'Ported By\Dels Ways18, Raiden alfares & MELIOZETS`)';
+        creditTxt.setFormat(Paths.font("vcr.ttf"), 30, FlxColor.WHITE, RIGHT);
+        creditTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 3, 1);       
+        creditTxt.scrollFactor.set();
+        add(creditTxt);
+
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
@@ -1035,9 +1042,18 @@ class PlayState extends MusicBeatState
 					});
 				case 'senpai' | 'roses' | 'thorns':
 					if(daSong == 'roses') FlxG.sound.play(Paths.sound('ANGRY'));
+					
+					case 'unhappy':
+					startvideo('cutscene');
+					
 					schoolIntro(doof);
 				default:
-					startCountdown();
+					if (dialogueJson == null)
+						startCountdown();
+					else
+					{
+                        startDialogue(dialogueJson);
+					}
 			}
 			seenCutscene = true;
 		} else {
@@ -1130,7 +1146,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!runCutscene)
 		    {
-	            FlxG.switchState(new VideoState('assets/videos/' + fileName + '.webm', function()
+	            FlxG.switchState(new VideoState2('assets/videos/' + fileName + '.webm', function()
 	            {
 	                FlxG.switchState(new PlayState());  
 	                runCutscene = true;                          
@@ -1164,7 +1180,10 @@ class PlayState extends MusicBeatState
 	var dialogueCount:Int = 0;
 	//You don't have to add a song, just saying. You can just do "startDialogue(dialogueJson);" and it should work
 	public function startDialogue(dialogueFile:DialogueFile, ?song:String = null):Void
-	{	
+	{
+		#if mobileC
+		mcontrols.visible = false;
+		#end	
 		// TO DO: Make this more flexible, maybe?
 		if(dialogueFile.dialogue.length > 0) {
 			inCutscene = true;
@@ -1286,6 +1305,9 @@ class PlayState extends MusicBeatState
 
 	public function startCountdown():Void
 	{
+		#if mobileC
+		mcontrols.visible = true;
+		#end
 		if(startedCountdown) {
 			callOnLuas('onStartCountdown', []);
 			return;
@@ -1294,9 +1316,6 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 		var ret:Dynamic = callOnLuas('onStartCountdown', []);
 		if(ret != FunkinLua.Function_Stop) {
-                        #if mobileC
-		        mcontrols.visible = true;
-		        #end
 			generateStaticArrows(0);
 			generateStaticArrows(1);
 			for (i in 0...playerStrums.length) {
