@@ -17558,7 +17558,7 @@
 		"stage": "street3",
 		"needsVoices": true,
 		"validScore": true,
-		"speed": 2.5,
+		"speed": 2,
 		"bpm": 140
 	}
 }
